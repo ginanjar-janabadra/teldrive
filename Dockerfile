@@ -6,9 +6,10 @@ WORKDIR /app
 # Copy mod files
 COPY go.mod go.sum ./
 
-# Cache mount dengan prefix yang benar untuk Railway
-RUN --mount=type=cache,id=railway-89038782-22ce-4dea-9c9f-1511a186988c-go-mod,target=/go/pkg/mod \
-    --mount=type=cache,id=railway-89038782-22ce-4dea-9c9f-1511a186988c-go-build,target=/root/.cache/go-build \
+# Cache mount dengan format khusus Railway
+ARG RAILWAY_CACHE_KEY
+RUN --mount=type=cache,id=railway-cache-${RAILWAY_CACHE_KEY}-go-mod,target=/go/pkg/mod \
+    --mount=type=cache,id=railway-cache-${RAILWAY_CACHE_KEY}-go-build,target=/root/.cache/go-build \
     go mod download
 
 # Copy source code
