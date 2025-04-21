@@ -1,24 +1,26 @@
+# Build stage
 FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-# Enable Go modules
-ENV GO111MODULE=on
-
 # Copy mod files
 COPY go.mod go.sum ./
 
-# Download dependencies dengan cache
-RUN --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
+# Download dependencies dengan cache yang benar
+RUN --mount=type=cache,id=go-mod,target=/go/pkg/mod \
+    --mount=type=cache,id=go-build,target=/root/.cache/go-build \
     go mod download
 
 # Copy source code
 COPY . .
 
-# Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o myapp
+# Build aplikasi
+RUN CGO_ENABLED=0 GOOS=linux go build -o teldrive
 
+# Runtime stage
 FROM alpine:latest
-COPY --from=builder /app/myapp /myapp
-CMD ["/myapp"]
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+COPY --from=builder /app/teldrive .
+EXPOSE 8080
+CMD ["./teldrive"]
