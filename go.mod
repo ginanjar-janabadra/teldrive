@@ -113,3 +113,17 @@ require (
 )
 
 tool github.com/ogen-go/ogen/cmd/ogen
+
+module github.com/yourusername/teldrive
+
+go 1.21
+
+require (
+    github.com/gin-gonic/gin v1.9.1
+    github.com/joho/godotenv v1.5.1
+)
+
+// Jika ada replace module
+replace (
+    github.com/bad/module => github.com/fixed/module v1.2.3
+)
